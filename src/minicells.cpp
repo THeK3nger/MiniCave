@@ -1,5 +1,4 @@
 #include <iostream>
-#include<time.h>
 
 /*!
 * A Minimized Compressed Cellular Cave Generator.
@@ -94,7 +93,9 @@ private:
     * Initialize the map with a random amount of walls.
     */
     void randomFill() {
-        srand (time(NULL));
+        srand (getpid()); // Not the best, but I can remove include for time and save one line.
+
+
         for (int row = 0; row < this->height; row++) {
             for (int column = 0; column < this->width; column++)
             {
