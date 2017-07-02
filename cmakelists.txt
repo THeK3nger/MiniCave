@@ -1,11 +1,8 @@
-cmake_minimum_required(VERSION 2.8.4)
-project(CellularMaps)
+cmake_minimum_required(VERSION 3.7)
+project(MiniCells)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-set(SOURCE_FILES
-    cellularmap.cpp
-    cellularmap.h
-    main.cpp)
+set(SOURCE_FILES src/cellularmap.cpp)
 
-add_executable(CellularMaps ${SOURCE_FILES})
+add_executable(MiniCells ${SOURCE_FILES})
