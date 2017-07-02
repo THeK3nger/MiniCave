@@ -15,7 +15,7 @@
  *      CellularMap cm(50,40,40);
  *      cm.evolveMap();
  */
-class CellularMap
+class minicells
 {
 public:
 
@@ -34,20 +34,20 @@ public:
      * @param height                Desired map height.
      * @param walls_probability     Initial percentage of walls.
      */
-    CellularMap(int width, int height, int walls_probability)  :
+    minicells(int width, int height, int walls_probability)  :
             height(height), width(width), walls_probability(walls_probability)
     {
         map = new int[height*width];
         randomFill();
     }
 
-    ~CellularMap() { delete[] map; }
+    ~minicells() { delete[] map; }
 
     /*!
      * Execute a step of the automata algorithm creating the cave or
      * Smoothing the existing ones.
      */
-    void evolveMap() { evolveMap(CellularMap::CM_CONSERVATIVE); }
+    void evolveMap() { evolveMap(minicells::CM_CONSERVATIVE); }
 
     /*!
      * Execute a step of the automata algorithm creating the cave or
@@ -139,7 +139,7 @@ private:
         }
         else
         {
-            if (rule == CellularMap::CM_CONSERVATIVE) {
+            if (rule == minicells::CM_CONSERVATIVE) {
                 if (numWalls >= 5 || numWalls2 <= 2) {
                     return 1;
                 }
@@ -215,7 +215,7 @@ private:
 
 using namespace std;
 
-string mapToString(CellularMap& cm) {
+string mapToString(minicells& cm) {
     string returnString;
     for (int column = 0, row = 0; row < cm.getHeight(); row++) {
         for (column = 0; column < cm.getWidth(); column++)
@@ -228,10 +228,10 @@ string mapToString(CellularMap& cm) {
 }
 
 int main() {
-    // This is an use example for the CellularMap class.
-    CellularMap cm(50, 50, 40);
-    for (int i=0;i<4;++i){ cm.evolveMap(CellularMap::CM_CONSERVATIVE); }
-    for (int i=0;i<2;++i){ cm.evolveMap(CellularMap::CM_SMOOTH); }
+    // This is an use example for the minicells class.
+    minicells cm(50, 50, 40);
+    for (int i=0;i<4;++i){ cm.evolveMap(minicells::CM_CONSERVATIVE); }
+    for (int i=0;i<2;++i){ cm.evolveMap(minicells::CM_SMOOTH); }
     cout << mapToString(cm) << endl;
     return 0;
 }
