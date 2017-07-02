@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.7)
-project(MiniCells)
+project(MiniCave)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-set(SOURCE_FILES src/minicells.cpp)
+set(SOURCE_FILES src/minicave.cpp)
 
-add_executable(MiniCells ${SOURCE_FILES})
+add_executable(MiniCave ${SOURCE_FILES})
 
-set_property(TARGET MiniCells PROPERTY CXX_STANDARD 14)
-set_property(TARGET MiniCells PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET MiniCave PROPERTY CXX_STANDARD 14)
+set_property(TARGET MiniCave PROPERTY CXX_STANDARD_REQUIRED ON)

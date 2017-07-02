@@ -14,7 +14,7 @@
  *      CellularMap cm(50,40,40);
  *      cm.evolveMap();
  */
-class minicells
+class minicave
 {
 public:
 
@@ -33,20 +33,20 @@ public:
      * @param height                Desired map height.
      * @param walls_probability     Initial percentage of walls.
      */
-    minicells(int width, int height, int walls_probability)  :
+    minicave(int width, int height, int walls_probability)  :
             height(height), width(width), walls_probability(walls_probability)
     {
         map = new int[height*width];
         randomFill();
     }
 
-    ~minicells() { delete[] map; }
+    ~minicave() { delete[] map; }
 
     /*!
      * Execute a step of the automata algorithm creating the cave or
      * Smoothing the existing ones.
      */
-    void evolveMap() { evolveMap(minicells::CM_CONSERVATIVE); }
+    void evolveMap() { evolveMap(minicave::CM_CONSERVATIVE); }
 
     /*!
      * Execute a step of the automata algorithm creating the cave or
@@ -140,7 +140,7 @@ private:
         }
         else
         {
-            if (rule == minicells::CM_CONSERVATIVE) {
+            if (rule == minicave::CM_CONSERVATIVE) {
                 if (numWalls >= 5 || numWalls2 <= 2) {
                     return 1;
                 }
@@ -216,7 +216,7 @@ private:
 
 using namespace std;
 
-string mapToString(minicells& cm) {
+string mapToString(minicave& cm) {
     string returnString;
     for (int column = 0, row = 0; row < cm.getHeight(); row++) {
         for (column = 0; column < cm.getWidth(); column++)
@@ -229,10 +229,10 @@ string mapToString(minicells& cm) {
 }
 
 int main() {
-    // This is an use example for the minicells class.
-    minicells cm(50, 50, 40);
-    for (int i=0;i<4;++i){ cm.evolveMap(minicells::CM_CONSERVATIVE); }
-    for (int i=0;i<2;++i){ cm.evolveMap(minicells::CM_SMOOTH); }
+    // This is an use example for the minicave class.
+    minicave cm(50, 50, 40);
+    for (int i=0;i<4;++i){ cm.evolveMap(minicave::CM_CONSERVATIVE); }
+    for (int i=0;i<2;++i){ cm.evolveMap(minicave::CM_SMOOTH); }
     cout << mapToString(cm) << endl;
     return 0;
 }
