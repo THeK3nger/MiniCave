@@ -6,3 +6,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 set(SOURCE_FILES src/cellularmap.cpp)
 
 add_executable(MiniCells ${SOURCE_FILES})
+
+set_property(TARGET MiniCells PROPERTY CXX_STANDARD 14)
+set_property(TARGET MiniCells PROPERTY CXX_STANDARD_REQUIRED ON)
