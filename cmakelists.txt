@@ -4,8 +4,13 @@ project(MiniCave)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 set(SOURCE_FILES src/minicave.cpp)
+set(SOURCE_FILES_MINI src/minicave_mini.cpp)
 
 add_executable(MiniCave ${SOURCE_FILES})
+add_executable(MiniCaveMini ${SOURCE_FILES_MINI})
 
 set_property(TARGET MiniCave PROPERTY CXX_STANDARD 14)
 set_property(TARGET MiniCave PROPERTY CXX_STANDARD_REQUIRED ON)
+
+set_property(TARGET MiniCaveMini PROPERTY CXX_STANDARD 14)
+set_property(TARGET MiniCaveMini PROPERTY CXX_STANDARD_REQUIRED ON)
