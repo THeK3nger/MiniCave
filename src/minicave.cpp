@@ -9,14 +9,12 @@
 
 /*!
  * Implementation of a Cellular Automata cave-like map generator.
- *
- * USAGE EXAMPLE:
- *      CellularMap cm(50,40,40);
- *      cm.evolveMap();
  */
-class minicave
-{
-public:
+template <int W, int H>
+struct minicave {
+
+    int map[H*W];               // Store the map.
+    int width, height;      // The map width and height.
 
     /*!
      * Specifies the rule set used by the cellular automata.
@@ -28,25 +26,10 @@ public:
 
     /*!
      * Constructor.
-     *
-     * @param width                 Desired map width.
-     * @param height                Desired map height.
-     * @param walls_probability     Initial percentage of walls.
      */
-    minicave(int width, int height, int walls_probability)  :
-            height(height), width(width), walls_probability(walls_probability)
-    {
-        map = new int[height*width];
+    minicave() : width(W), height(H) {
         randomFill();
     }
-
-    ~minicave() { delete[] map; }
-
-    /*!
-     * Execute a step of the automata algorithm creating the cave or
-     * Smoothing the existing ones.
-     */
-    void evolveMap() { evolveMap(minicave::CM_CONSERVATIVE); }
 
     /*!
      * Execute a step of the automata algorithm creating the cave or
@@ -54,10 +37,8 @@ public:
      */
     void evolveMap(RuleSet rule) {
         // By initializing column in the outer loop, its only created ONCE
-        for (int row = 0; row <= height - 1; row++)
-        {
-            for (int column = 0; column <= width - 1; column++)
-            {
+        for (int row = 0; row <= H - 1; row++) {
+            for (int column = 0; column <= W - 1; column++) {
                 map[getIndex(column, row)] = placeWallLogic(column, row, rule);
             }
         }
@@ -72,53 +53,30 @@ public:
      */
     int inline getElement(int x, int y) { return map[getIndex(x, y)]; }
 
-    /*!
-     * Get the map width.
-     */
-    int inline getWidth () { return width; }
-
-    /*!
-     * Get the map height.
-     */
-    int inline getHeight() { return height; }
-
-private:
-
-    int* map;               // Store the map.
-    int width;              // The map width.
-    int height;             // The map height.
-    int walls_probability;  // The initial amount of walls.
-
     /*
     * Initialize the map with a random amount of walls.
     */
     void randomFill() {
-        srand (getpid()); // Not the best, but I can remove include for time and save one line.
+        srand(getpid()); // Not the best, but I can remove include for time and save one line.
 
 
-        for (int row = 0; row < this->height; row++) {
-            for (int column = 0; column < this->width; column++)
-            {
+        for (int row = 0; row < H; row++) {
+            for (int column = 0; column < W; column++) {
                 // If coordinates lie on the the edge of the map (creates a border).
                 // We want border on a map.
-                if (column == 0 || row == 0 || (column == width - 1) || (row == height - 1))
-                {
+                if (column == 0 || row == 0 || (column == W - 1) || (row == H - 1)) {
                     map[getIndex(column, row)] = 1;
                 }
                     // Else, fill with a wall a random percent of the time
-                else
-                {
-                    int mapMiddle = (height / 2);
+                else {
+                    int mapMiddle = (H / 2);
 
                     // Add an empty line in the center of the map. This leads to better maps.
                     // There is no other reason.
-                    if (row == mapMiddle)
-                    {
+                    if (row == mapMiddle) {
                         map[getIndex(column, row)] = 0;
-                    }
-                    else
-                    {
-                        map[getIndex(column, row)] = (rand() % 101 >= walls_probability) ? 0 : 1;
+                    } else {
+                        map[getIndex(column, row)] = (rand() % 101 >= 40) ? 0 : 1;
                     }
                 }
             }
@@ -130,16 +88,13 @@ private:
     *
     * @return The new value of tile <x,y>.
     */
-    int  placeWallLogic(int x, int y, RuleSet rule) {
+    int placeWallLogic(int x, int y, RuleSet rule) {
         int numWalls = getAdjacentWalls(x, y, 1, 1);
         int numWalls2 = getAdjacentWalls(x, y, 2, 2);
 
-        if (map[getIndex(x,y)] == 1)
-        {
+        if (map[getIndex(x, y)] == 1) {
             return (numWalls >= 3) ? 1 : 0;
-        }
-        else
-        {
+        } else {
             if (rule == minicave::CM_CONSERVATIVE) {
                 if (numWalls >= 5 || numWalls2 <= 2) {
                     return 1;
@@ -162,7 +117,7 @@ private:
     * @param scope_y    The search scope radius in y direction.
     * @return           The number of walls in the scope of <x,y>.
     */
-    int  getAdjacentWalls(int x, int y, int scope_x, int scope_y) {
+    int getAdjacentWalls(int x, int y, int scope_x, int scope_y) {
         int startX = x - scope_x;
         int startY = y - scope_y;
         int endX = x + scope_x;
@@ -171,12 +126,9 @@ private:
         int wallCounter = 0;
 
         for (int iY = startY; iY <= endY; iY++) {
-            for (int iX = startX; iX <= endX; iX++)
-            {
-                if (!(iX == x && iY == y))
-                {
-                    if (isWall(iX,iY))
-                    {
+            for (int iX = startX; iX <= endX; iX++) {
+                if (!(iX == x && iY == y)) {
+                    if (isWall(iX, iY)) {
                         wallCounter += 1;
                     }
                 }
@@ -192,7 +144,7 @@ private:
     * @param y  The y coordinate in the map.
     * @return   True iff <x,y> is out of the map. False otherwise.
     */
-    bool isOutOfBound(int x, int y) { return (x < 0 || y<0 || x>width - 1 || y > height - 1); }
+    bool isOutOfBound(int x, int y) { return x < 0 || y < 0 || x > W - 1 || y > H - 1; }
 
     /*
     * Get the rom-major index of the tile <x,y>
@@ -201,7 +153,7 @@ private:
     * @param y  The y coordinate in the map.
     * @return   The row-major index of <x,y>.
     */
-    int  inline getIndex(int x, int y) { return x + y*width; }
+    int inline getIndex(int x, int y) { return x + y * W; }
 
     /*
     * Chek if the tile is a Wall.
@@ -216,11 +168,11 @@ private:
 
 using namespace std;
 
-string mapToString(minicave& cm) {
+template<int H, int W>
+string mapToString(minicave<H,W> &cm) {
     string returnString;
-    for (int column = 0, row = 0; row < cm.getHeight(); row++) {
-        for (column = 0; column < cm.getWidth(); column++)
-        {
+    for (int row = 0; row < cm.height; row++) {
+        for (int column = 0; column < cm.width; column++) {
             returnString += cm.getElement(column, row) == 1 ? "#" : ".";
         }
         returnString += "\n";
@@ -230,9 +182,9 @@ string mapToString(minicave& cm) {
 
 int main() {
     // This is an use example for the minicave class.
-    minicave cm(50, 50, 40);
-    for (int i=0;i<4;++i){ cm.evolveMap(minicave::CM_CONSERVATIVE); }
-    for (int i=0;i<2;++i){ cm.evolveMap(minicave::CM_SMOOTH); }
+    minicave<80,80> cm;
+    for (int i = 0; i < 4; ++i) { cm.evolveMap(minicave<80,80>::CM_CONSERVATIVE); }
+    cm.evolveMap(minicave<80,80>::CM_SMOOTH);
     cout << mapToString(cm) << endl;
     return 0;
 }
