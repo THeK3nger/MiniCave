@@ -17,14 +17,6 @@ struct minicave {
     int width, height;      // The map width and height.
 
     /*!
-     * Specifies the rule set used by the cellular automata.
-     */
-    enum RuleSet {
-        CM_CONSERVATIVE,    //! Corresponding to R1(p) >= 5 || R2(p) <= 1
-        CM_SMOOTH           //! Corresponding to R1(p) >= 5
-    };
-
-    /*!
      * Constructor.
      */
     minicave() : width(W), height(H) {
@@ -34,12 +26,15 @@ struct minicave {
     /*!
      * Execute a step of the automata algorithm creating the cave or
      * Smoothing the existing ones using a specific rule set.
+     *
+     * If clean true RULE = Corresponding to R1(p) >= 5
+     * If clean false RULE = Corresponding to R1(p) >= 5 || R2(p) <= 1
      */
-    void evolveMap(RuleSet rule) {
+    void evolveMap(bool clean) {
         // By initializing column in the outer loop, its only created ONCE
         for (int row = 0; row <= H - 1; row++) {
             for (int column = 0; column <= W - 1; column++) {
-                map[getIndex(column, row)] = placeWallLogic(column, row, rule);
+                map[getIndex(column, row)] = placeWallLogic(column, row, clean);
             }
         }
     }
@@ -88,14 +83,14 @@ struct minicave {
     *
     * @return The new value of tile <x,y>.
     */
-    int placeWallLogic(int x, int y, RuleSet rule) {
+    int placeWallLogic(int x, int y, bool clean) {
         int numWalls = getAdjacentWalls(x, y, 1, 1);
         int numWalls2 = getAdjacentWalls(x, y, 2, 2);
 
         if (map[getIndex(x, y)] == 1) {
             return (numWalls >= 3) ? 1 : 0;
         } else {
-            if (rule == minicave::CM_CONSERVATIVE) {
+            if (!clean) {
                 if (numWalls >= 5 || numWalls2 <= 2) {
                     return 1;
                 }
@@ -183,8 +178,8 @@ string mapToString(minicave<H,W> &cm) {
 int main() {
     // This is an use example for the minicave class.
     minicave<80,80> cm;
-    for (int i = 0; i < 4; ++i) { cm.evolveMap(minicave<80,80>::CM_CONSERVATIVE); }
-    cm.evolveMap(minicave<80,80>::CM_SMOOTH);
+    for (int i = 0; i < 4; ++i) { cm.evolveMap(false); }
+    cm.evolveMap(true);
     cout << mapToString(cm) << endl;
     return 0;
 }
