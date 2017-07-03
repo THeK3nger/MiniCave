@@ -88,7 +88,7 @@ def wrap_simple(filename, buf, tokens, width):
             if token_needs > line_remaining:
                 buf += line + '\n'
                 line = ''
-                # line_remaining = 0
+                line_remaining = 0
 
         if need_whitespace:
             last_space = len(line)
@@ -114,4 +114,4 @@ if __name__ == '__main__':
 
     (buf, tokens) = get_tokens(istr)
 
-    wrap_simple(filename, buf, tokens, 80)
+    wrap_simple(filename, buf, tokens, 50)
