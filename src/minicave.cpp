@@ -51,7 +51,7 @@ struct minicave {
      * @param y The y coordinate.
      * @return The element in <x,y>.
      */
-    int inline getElement(int x, int y) { return map[getIndex(x, y)]; }
+    int getElement(int x, int y) { return map[getIndex(x, y)]; }
 
     /*
     * Initialize the map with a random amount of walls.
