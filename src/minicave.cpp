@@ -10,17 +10,30 @@
 /*!
  * Implementation of a Cellular Automata cave-like map generator.
  */
-template <int W, int H>
+template<int W, int H>
 struct minicave {
 
-    int map[H*W];               // Store the map.
-    int width, height;      // The map width and height.
+    int map[H * W];  // Store the map.
+    int w, h;      // The map width and height.
 
     /*!
      * Constructor.
      */
-    minicave() : width(W), height(H) {
-        randomFill();
+    minicave() : w(W), h(H) {
+        /*
+        * Initialize the map with a random amount of walls.
+        */
+        for (int r = 0; r < H; r++) {
+            for (int c = 0; c < W; c++) {
+                map[k(c, r)] = (c == 0 || r == 0 || (c == W - 1) || (r == H - 1))
+                               ? // If coordinates lie on the the edge of the map (creates a border).
+                               1 : // Wall
+                               (r == (H / 2))
+                               ? //  Else, fill with a wall a random percent of the time add an empty line in the center of the map. This leads to better maps.
+                               0 :
+                               (rand() % 10 >= 4 ? 0 : 1); // ELSE
+            }
+        }
     }
 
     /*!
@@ -34,46 +47,7 @@ struct minicave {
         // By initializing column in the outer loop, its only created ONCE
         for (int row = 0; row <= H - 1; row++) {
             for (int column = 0; column <= W - 1; column++) {
-                map[getIndex(column, row)] = placeWallLogic(column, row, clean);
-            }
-        }
-    }
-
-    /*!
-     * Get the element in position <x,y>.
-     *
-     * @param x The x coordinate.
-     * @param y The y coordinate.
-     * @return The element in <x,y>.
-     */
-    int getElement(int x, int y) { return map[getIndex(x, y)]; }
-
-    /*
-    * Initialize the map with a random amount of walls.
-    */
-    void randomFill() {
-        srand(getpid()); // Not the best, but I can remove include for time and save one line.
-
-
-        for (int row = 0; row < H; row++) {
-            for (int column = 0; column < W; column++) {
-                // If coordinates lie on the the edge of the map (creates a border).
-                // We want border on a map.
-                if (column == 0 || row == 0 || (column == W - 1) || (row == H - 1)) {
-                    map[getIndex(column, row)] = 1;
-                }
-                    // Else, fill with a wall a random percent of the time
-                else {
-                    int mapMiddle = (H / 2);
-
-                    // Add an empty line in the center of the map. This leads to better maps.
-                    // There is no other reason.
-                    if (row == mapMiddle) {
-                        map[getIndex(column, row)] = 0;
-                    } else {
-                        map[getIndex(column, row)] = (rand() % 101 >= 40) ? 0 : 1;
-                    }
-                }
+                map[k(column, row)] = placeWallLogic(column, row, clean);
             }
         }
     }
@@ -87,20 +61,27 @@ struct minicave {
         int numWalls = getAdjacentWalls(x, y, 1, 1);
         int numWalls2 = getAdjacentWalls(x, y, 2, 2);
 
-        if (map[getIndex(x, y)] == 1) {
+        return map[k(x, y)] == 1 ? // If
+               // ( Then
+               (numWalls >= 3) ? 1 : 0
+               // ) Else
+                                 : clean ?
+                                   numWalls >= 5 ? 1 : 0
+                                         : numWalls >= 5 || numWalls2 <= 2;
+
+        /* Original
+        if (map[k(x, y)] == 1) {
             return (numWalls >= 3) ? 1 : 0;
         } else {
             if (!clean) {
                 if (numWalls >= 5 || numWalls2 <= 2) {
                     return 1;
                 }
-            } else {
-                if (numWalls >= 5) {
-                    return 1;
-                }
+            } else if (numWalls >= 5) {
+                return 1;
             }
         }
-        return 0;
+        return 0; */
     }
 
     /*
@@ -148,7 +129,7 @@ struct minicave {
     * @param y  The y coordinate in the map.
     * @return   The row-major index of <x,y>.
     */
-    int inline getIndex(int x, int y) { return x + y * W; }
+    int k(int x, int y) { return x + y * W; }
 
     /*
     * Chek if the tile is a Wall.
@@ -157,27 +138,28 @@ struct minicave {
     * @param y  The y coordinate in the map.
     * @return   True iff <x,y> is a wall. False otherwise.
     */
-    bool isWall(int x, int y) { return (isOutOfBound(x, y)) || (map[getIndex(x, y)] == 1); }
+    bool isWall(int x, int y) { return (isOutOfBound(x, y)) || (map[k(x, y)] == 1); }
 
 };
 
 using namespace std;
 
 template<int H, int W>
-string mapToString(minicave<H,W> &cm) {
-    string returnString;
-    for (int row = 0; row < cm.height; row++) {
-        for (int column = 0; column < cm.width; column++) {
-            returnString += cm.getElement(column, row) == 1 ? "#" : ".";
+string mapToString(minicave<H, W> &cm) {
+    string r;
+    for (int row = 0; row < cm.h; row++) {
+        for (int column = 0; column < cm.w; column++) {
+            r += cm.map[cm.k(column, row)] == 1 ? "#" : ".";
         }
-        returnString += "\n";
+        r += "\n";
     }
-    return returnString;
+    return r;
 }
 
 int main() {
+    srand(getpid()); // Not the best, but I can remove include for time and save one line.
     // This is an use example for the minicave class.
-    minicave<80,80> cm;
+    minicave<80, 80> cm;
     for (int i = 0; i < 4; ++i) { cm.evolveMap(false); }
     cm.evolveMap(true);
     cout << mapToString(cm) << endl;
